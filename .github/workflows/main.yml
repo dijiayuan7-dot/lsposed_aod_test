@@ -1,8 +1,8 @@
 name: Build LSPosed module
 
 on:
-  push:
   workflow_dispatch:
+  push:
 
 jobs:
   build:
@@ -12,29 +12,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
+      - name: Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android platform
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Install SDK
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager "platform-tools" "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Set up Gradle
+      - name: Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
 
-      - name: Build APK
-        run: gradle --no-daemon assembleDebug
+      - name: Build
+        run: gradle assembleDebug --no-daemon
 
-      - name: Upload APK
+      - name: APK
         uses: actions/upload-artifact@v4
         with:
-          name: aod-suspend-test-debug
+          name: aod-suspend-test
           path: app/build/outputs/apk/debug/app-debug.apk
-          
